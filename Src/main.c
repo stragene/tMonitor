@@ -33,6 +33,7 @@ int main(void)
     while (1)
     {
         LL_GPIO_SetOutputPin(IO_RunLed);
+        LL_mDelay(1000);
     }
 }
 
