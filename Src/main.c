@@ -32,6 +32,7 @@ int main(void)
     vUartHal_Init();
     while (1)
     {
+        LL_GPIO_SetOutputPin(IO_RunLed);
     }
 }
 
