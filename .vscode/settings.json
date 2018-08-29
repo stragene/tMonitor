@@ -1,0 +1,10 @@
+{
+    "C_Cpp.errorSquiggles": "Disabled",
+    "files.associations": {
+        "user_hal.h": "c",
+        "stm32f3xx_ll_gpio.h": "c",
+        "stm32f0xx.h": "c",
+        "stm32f070x6.h": "c"
+    },
+    "C_Cpp.intelliSenseEngineFallback": "Disabled"
+}
