@@ -10,7 +10,6 @@ static void vBuf_Clear(struct ucbuf *buf);
 /*----------------------------------------------------------------------
                             全局变量定义
 ----------------------------------------------------------------------*/
-UartDef UART_GPRS;
 
 /*----------------------------------------------------------------------
                           外部全局变量声明
@@ -19,24 +18,6 @@ UartDef UART_GPRS;
 /*----------------------------------------------------------------------
                             内部函数定义
 ----------------------------------------------------------------------*/
-
-/***************************************************************
-* 函数名称: vUserHal_Init
-* 功能描述: 硬件中间层初始化，所调用函数为CobeMx自动生成
-* 输入参数: 
-* 输出参数: 
-* 返 回 值: 
-****************************************************************/
-void vUartHal_Init(void)
-{
-    UART_GPRS.handler = USART1;
-    memset(UART_GPRS.Sndbuf.data, 0, BUF_SIZE);
-    UART_GPRS.Sndbuf.wr = 0;
-    UART_GPRS.Sndbuf.rd = 0;
-    memset(UART_GPRS.Rsvbuf.data, 0, BUF_SIZE);
-    UART_GPRS.Rsvbuf.wr = 0;
-    UART_GPRS.Rsvbuf.rd = 0;
-}
 
 /***************************************************************
 * 函数名称: Uart_Read
@@ -102,6 +83,7 @@ int32_t Uart_Write_IT(UartDef *puart, const uint8_t *buf, uint32_t count, uint32
     }
     sendlen = puart->Sndbuf.rd;
     LL_USART_EnableIT_TXE(puart->handler);
+
     while (delay)
     {
         /*发送完成*/

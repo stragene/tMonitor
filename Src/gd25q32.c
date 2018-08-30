@@ -1,10 +1,10 @@
 /***********************************************************************
 * Copyright (c) 2015,积成电子股份有限公司 All rights reserved.
 *
-* 文件名称： WindBond_Flash.c
+* 文件名称： gd25q32.c
 * 描    述： Flash存取源文件
 *
-* 文件说明： Flash的移植只需要修改FlashInit()函数中引脚的配置和WindBond_Flash.h
+* 文件说明： Flash的移植只需要修改FlashInit()函数中引脚的配置和 gd25q32.h
              中的通信方式、引脚部分的宏配置即可。
 *
 ***********************************************************************/
@@ -15,9 +15,8 @@ extern "C"
 #endif
 
 //#include "Shell.h"
-#include "WindBond_Flash.h"
-#include "stm32f3xx.h"
-#include "spi.h"
+#include "gd25q32.h"
+    //#include "spi.h"
 
     /*----------------------------------------------------------------------
                             内部函数声明
@@ -44,7 +43,7 @@ extern "C"
 ****************************************************************/
     void FlashInit(void)
     {
-        HAL_SPI_MspInit(hspi1);
+        //HAL_SPI_MspInit(hspi1);
         /* Deselect the FLASH: Chip Select high */
         FLASH_CS_HIGH();
 
@@ -61,10 +60,11 @@ extern "C"
 * 输出参数: 无
 * 返 回 值: 无
 ****************************************************************/
-    void FlashSectorErase(UINT32 SectorAddr)
+    void FlashSectorErase(uint32_t SectorAddr)
     {
         /* Send write enable instruction */
-        FlashWriteEnable();
+        /*FlashWriteEnable();*/
+        FLASH_WP_DEN();
         FlashWaitForWriteEnd();
         /* Sector Erase */
         /* Select the FLASH: Chip Select low */
@@ -90,10 +90,11 @@ extern "C"
 * 输出参数: 无
 * 返 回 值: 无
 ****************************************************************/
-    void FlashBlockErase(UINT32 BlockAddr)
+    void FlashBlockErase(uint32_t BlockAddr)
     {
         /* Send write enable instruction */
-        FlashWriteEnable();
+        /*FlashWriteEnable();*/
+        FLASH_WP_DEN();
         FlashWaitForWriteEnd();
         /* Block Erase */
         /* Select the FLASH: Chip Select low */
@@ -146,7 +147,7 @@ extern "C"
 * 输出参数: 无
 * 返 回 值: 无
 ****************************************************************/
-    void FlashPageWrite(UINT8 *pBuffer, UINT32 WriteAddr, UINT16 NumByteToWrite)
+    void FlashPageWrite(uint8_t *pBuffer, uint32_t WriteAddr, uint16_t NumByteToWrite)
     {
         /* Enable the write access to the FLASH */
         FlashWriteEnable();
@@ -194,13 +195,17 @@ extern "C"
 * 输出参数: 无
 * 返 回 值: 无
 ****************************************************************/
-    void FlashBufferWrite(UINT8 *pBuffer, UINT32 WriteAddr, UINT16 NumByteToWrite)
+    void FlashBufferWrite(uint8_t *pBuffer, uint32_t WriteAddr, uint16_t NumByteToWrite)
     {
-        UINT8 NumOfPage = 0, NumOfSingle = 0, Addr = 0, count = 0, temp = 0;
+        uint8_t NumOfPage = 0, NumOfSingle = 0, Addr = 0, count = 0, temp = 0;
 
+        /*地址的页内偏移量*/
         Addr = WriteAddr % PAGE_SIZE;
+        /*地址所在页剩余容量*/
         count = PAGE_SIZE - Addr;
+        /*数据总页数*/
         NumOfPage = NumByteToWrite / PAGE_SIZE;
+        /*不满一页的数据个数*/
         NumOfSingle = NumByteToWrite % PAGE_SIZE;
 
         if (Addr == 0) /* WriteAddr is PAGE_SIZE aligned  */
@@ -274,7 +279,7 @@ extern "C"
 * 输出参数: 无
 * 返 回 值: 无
 ****************************************************************/
-    void FlashBufferRead(UINT8 *pBuffer, UINT32 ReadAddr, UINT16 NumByteToRead)
+    void FlashBufferRead(uint8_t *pBuffer, uint32_t ReadAddr, uint16_t NumByteToRead)
     {
         /* Select the FLASH: Chip Select low */
         FLASH_CS_LOW();
@@ -308,9 +313,9 @@ extern "C"
 * 输出参数: 无
 * 返 回 值: 读取的ID
 ****************************************************************/
-    UINT32 FlashIDRead(void)
+    uint32_t FlashIDRead(void)
     {
-        UINT32 Temp = 0, Temp0 = 0, Temp1 = 0, Temp2 = 0;
+        uint32_t Temp = 0, Temp0 = 0, Temp1 = 0, Temp2 = 0;
 
         /* Select the FLASH: Chip Select low */
         FLASH_CS_LOW();
@@ -342,9 +347,9 @@ extern "C"
 * 输出参数: 无
 * 返 回 值: 设备ID
 ****************************************************************/
-    UINT32 FlashDeviceIDRead(void)
+    uint32_t FlashDeviceIDRead(void)
     {
-        UINT32 Temp = 0;
+        uint32_t Temp = 0;
 
         /* Select the FLASH: Chip Select low */
         FLASH_CS_LOW();
@@ -371,7 +376,7 @@ extern "C"
 * 输出参数: 无
 * 返 回 值: 无
 ****************************************************************/
-    void FlashStartReadSequence(UINT32 ReadAddr)
+    void FlashStartReadSequence(uint32_t ReadAddr)
     {
         /* Select the FLASH: Chip Select low */
         FLASH_CS_LOW();
@@ -397,7 +402,7 @@ extern "C"
 * 输出参数: 无
 * 返 回 值: 读取的字节
 ****************************************************************/
-    UINT8 FlashByteRead(void)
+    uint8_t FlashByteRead(void)
     {
         return (FlashByteSend(Dummy_Byte));
     }
@@ -409,19 +414,23 @@ extern "C"
 * 输出参数: 无
 * 返 回 值: 写结果
 ****************************************************************/
-    UINT8 FlashByteSend(UINT8 byte)
+    uint8_t FlashByteSend(uint8_t byte)
     {
-        UINT32 udwCount = 0;
+        uint32_t udwCount = 0;
 
-        if (ucPressureTestFlag == 1)
+#if 0 
+if (ucPressureTestFlag == 1)
         {
             while (1)
+
             {
             }
         }
 
+#endif
         /* Loop while DR register in not emplty */
-        while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET)
+        while (!LL_SPI_IsActiveFlag_TXE(SPI1))
+        //while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET)
         {
 #if 0
         if (udwCount++ < 5000)
@@ -436,11 +445,13 @@ extern "C"
         }
 
         /* Send byte through the SPI1 peripheral */
-        SPI_SendData8(SPI1, byte);
+        //SPI_SendData8(SPI1, byte);
+        LL_SPI_TransmitData8(SPI1, byte);
 
         /* Wait to receive a byte */
         udwCount = 0;
-        while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE) == RESET)
+        //while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE) == RESET)
+        while (!LL_SPI_IsActiveFlag_RXNE(SPI1))
         {
 #if 0
         if (udwCount++ < 5000)
@@ -455,7 +466,8 @@ extern "C"
         }
 
         /* Return the byte read from the SPI bus */
-        return SPI_ReceiveData8(SPI1);
+        //return SPI_ReceiveData8(SPI1);
+        return LL_SPI_ReceiveData8(SPI1);
     }
 
     /***************************************************************
@@ -465,21 +477,25 @@ extern "C"
 * 输出参数: 无
 * 返 回 值: 写结果
 ****************************************************************/
-    UINT16 FlashHalfWordSend(UINT16 HalfWord)
+    uint16_t FlashHalfWordSend(uint16_t HalfWord)
     {
         /* Loop while DR register in not emplty */
-        while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET)
+        //while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET)
+        while (!LL_SPI_IsActiveFlag_TXE(SPI1))
             ;
 
         /* Send Half Word through the SPI1 peripheral */
-        SPI_SendData8(SPI1, HalfWord);
+        //SPI_SendData8(SPI1, HalfWord);
+        LL_SPI_TransmitData16(SPI1, HalfWord);
 
         /* Wait to receive a Half Word */
-        while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE) == RESET)
+        //while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE) == RESET)
+        while (!LL_SPI_IsActiveFlag_RXNE(SPI1))
             ;
 
         /* Return the Half Word read from the SPI bus */
-        return SPI_ReceiveData8(SPI1);
+        //return SPI_ReceiveData8(SPI1);
+        return LL_SPI_ReceiveData16(SPI1);
     }
 
     /***************************************************************
@@ -510,7 +526,7 @@ extern "C"
 ****************************************************************/
     void FlashWaitForWriteEnd(void)
     {
-        UINT8 FLASH_Status = 0;
+        uint8_t FLASH_Status = 0;
 
         /* Select the FLASH: Chip Select low */
         FLASH_CS_LOW();
@@ -543,8 +559,7 @@ extern "C"
         FLASH_CS_LOW();
 
         /* Send "Power Down" instruction */
-        /* FlashByteSend(W25X_PowerDown) */
-        FlashByteSend(W25X_ReleasePowerDown);
+        FlashByteSend(W25X_PowerDown);
         /* Deselect the FLASH: Chip Select high */
         FLASH_CS_HIGH();
     }

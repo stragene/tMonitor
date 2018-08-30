@@ -1,29 +1,26 @@
 /***********************************************************************
 * Copyright (c) 2015,积成电子股份有限公司 All rights reserved.
 *
-* 文件名称： WindBond_Flash.h
+* 文件名称： gd25q32.h
 * 描    述： Flash存取头文件
 *
 * 文件说明：
 *
 ***********************************************************************/
 
-#ifndef WINDBOND_FLASH_H
-#define WINDBOND_FLASH_H
+#ifndef __gd25q32_H
+#define __gd25q32_H
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
-#include "stm32f3xx.h"
+#include "stm32f0xx.h"
+//#include "stm32f0xx_ll_gpio.h"
 
 /*----------------------------------------------------------------------
                                 宏定义
 ----------------------------------------------------------------------*/
 /*---------------------------ID、页大小、指令---------------------------*/
+
 /*Flash ID*/
-#define FLASH_ID 0xC84017 /*Flash第一次使用要先判断ID*/
+#define FLASH_ID 0xC84015 /*Flash第一次使用要先判断ID*/
 
 /*Flash 页大小*/
 #define PAGE_SIZE 256
@@ -83,36 +80,35 @@ extern "C"
 //#define FLASH_CS_GPIO_CLK RCC_AHBPeriph_GPIOA
 
 /*使能/禁止 配置*/
-#define FLASH_CS_LOW() HAL_GPIO_WritePin(GPIOA, GPIO_Pin_4, GPIO_PIN_RESET)
-#define FLASH_CS_HIGH() HAL_GPIO_WritePin(GPIOA, GPIO_Pin_4, GPIO_PIN_SET)
+#define FLASH_CS_LOW() LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_4)
+#define FLASH_CS_HIGH() LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_4)
+/*写保护使能/禁能 配置*/
+#define FLASH_WP_EN() LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_1)
+#define FLASH_WP_DEN() LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_1)
 
-    /*----------------------------------------------------------------------
+/*----------------------------------------------------------------------
                            枚举、结构体定义
 ----------------------------------------------------------------------*/
 
-    /*----------------------------------------------------------------------
+/*----------------------------------------------------------------------
                                函数声明
 ----------------------------------------------------------------------*/
-    void FlashInit(void);
-    void FlashSectorErase(u32 SectorAddr);
-    void FlashBlockErase(UINT32 BlockAddr);
-    void FlashBulkErase(void);
-    void FlashPageWrite(u8 *pBuffer, u32 WriteAddr, u16 NumByteToWrite);
-    void FlashBufferWrite(u8 *pBuffer, u32 WriteAddr, u16 NumByteToWrite);
-    void FlashBufferRead(u8 *pBuffer, u32 ReadAddr, u16 NumByteToRead);
-    UINT32 FlashIDRead(void);
-    UINT32 FlashDeviceIDRead(void);
-    void FlashStartReadSequence(u32 ReadAddr);
-    void FlashPowerDown(void);
-    void FlashWakeUp(void);
-    UINT8 FlashByteRead(void);
-    UINT8 FlashByteSend(u8 byte);
-    UINT16 FlashHalfWordSend(u16 HalfWord);
-    void FlashWriteEnable(void);
-    void FlashWaitForWriteEnd(void);
-
-#ifdef __cplusplus
-}
-#endif
+void FlashInit(void);
+void FlashSectorErase(uint32_t SectorAddr);
+void FlashBlockErase(uint32_t BlockAddr);
+void FlashBulkErase(void);
+void FlashPageWrite(uint8_t *pBuffer, uint32_t WriteAddr, uint16_t NumByteToWrite);
+void FlashBufferWrite(uint8_t *pBuffer, uint32_t WriteAddr, uint16_t NumByteToWrite);
+void FlashBufferRead(uint8_t *pBuffer, uint32_t ReadAddr, uint16_t NumByteToRead);
+uint32_t FlashIDRead(void);
+uint32_t FlashDeviceIDRead(void);
+void FlashStartReadSequence(uint32_t ReadAddr);
+void FlashPowerDown(void);
+void FlashWakeUp(void);
+uint8_t FlashByteRead(void);
+uint8_t FlashByteSend(uint8_t byte);
+uint16_t FlashHalfWordSend(uint16_t HalfWord);
+void FlashWriteEnable(void);
+void FlashWaitForWriteEnd(void);
 
 #endif
