@@ -499,25 +499,25 @@ static void MX_GPIO_Init(void)
     /**/
     LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_0);
 
-    /**/
+    /*NB_OnOff*/
     LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_15);
 
-    /**/
+    /*NB_Reset*/
     LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_8);
 
-    /**/
+    /*RunLed*/
     LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_8);
 
-    /**/
+    /*Flash_CS*/
     LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_4);
 
-    /**/
+    /*Flash_Hold*/
     LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_0);
 
-    /**/
+    /*Flash_WP*/
     LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_1);
 
-    /**/
+    /*IO_18B20*/
     LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_12);
 
     /**/

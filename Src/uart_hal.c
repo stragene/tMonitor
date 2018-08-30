@@ -29,7 +29,6 @@ UartDef UART_GPRS;
 ****************************************************************/
 void vUartHal_Init(void)
 {
-    //LL_SYSTICK_EnableIT();
     UART_GPRS.handler = USART1;
     memset(UART_GPRS.Sndbuf.data, 0, BUF_SIZE);
     UART_GPRS.Sndbuf.wr = 0;
