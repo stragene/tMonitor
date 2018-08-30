@@ -1,6 +1,6 @@
 
-#ifndef __user_hal_H
-#define __user_hal_H
+#ifndef __uart_hal_H
+#define __uart_hal_H
 #ifdef __cplusplus
 extern "C"
 {

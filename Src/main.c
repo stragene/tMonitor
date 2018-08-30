@@ -1,12 +1,65 @@
+/**
+  ******************************************************************************
+  * @file           : main.c
+  * @brief          : Main program body
+  ******************************************************************************
+  ** This notice applies to any and all portions of this file
+  * that are not between comment pairs USER CODE BEGIN and
+  * USER CODE END. Other portions of this file, whether 
+  * inserted by the user or by software development tools
+  * are owned by their respective copyright owners.
+  *
+  * COPYRIGHT(c) 2018 STMicroelectronics
+  *
+  * Redistribution and use in source and binary forms, with or without modification,
+  * are permitted provided that the following conditions are met:
+  *   1. Redistributions of source code must retain the above copyright notice,
+  *      this list of conditions and the following disclaimer.
+  *   2. Redistributions in binary form must reproduce the above copyright notice,
+  *      this list of conditions and the following disclaimer in the documentation
+  *      and/or other materials provided with the distribution.
+  *   3. Neither the name of STMicroelectronics nor the names of its contributors
+  *      may be used to endorse or promote products derived from this software
+  *      without specific prior written permission.
+  *
+  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  *
+  ******************************************************************************
+  */
+/* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "user_hal.h"
 
+/* USER CODE BEGIN Includes */
+
+/* USER CODE END Includes */
+
+/* Private variables ---------------------------------------------------------*/
+
+/* USER CODE BEGIN PV */
+/* Private variables ---------------------------------------------------------*/
+
+/* USER CODE END PV */
+
+/* Private function prototypes -----------------------------------------------*/
 static void LL_Init(void);
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
 static void MX_SPI1_Init(void);
 static void MX_USART1_UART_Init(void);
+static void MX_IWDG_Init(void);
+static void MX_RTC_Init(void);
+static void MX_WWDG_Init(void);
+static void MX_CRC_Init(void);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
@@ -24,17 +77,49 @@ static void MX_USART1_UART_Init(void);
   */
 int main(void)
 {
+    /* USER CODE BEGIN 1 */
+
+    /* USER CODE END 1 */
+
+    /* MCU Configuration----------------------------------------------------------*/
+
+    /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
     LL_Init();
+
+    /* USER CODE BEGIN Init */
+
+    /* USER CODE END Init */
+
+    /* Configure the system clock */
     SystemClock_Config();
+
+    /* USER CODE BEGIN SysInit */
+
+    /* USER CODE END SysInit */
+
+    /* Initialize all configured peripherals */
+    MX_GPIO_Init();
     MX_DMA_Init();
     MX_SPI1_Init();
     MX_USART1_UART_Init();
-    vUartHal_Init();
+    MX_IWDG_Init();
+    MX_RTC_Init();
+    MX_WWDG_Init();
+    MX_CRC_Init();
+    /* USER CODE BEGIN 2 */
+
+    /* USER CODE END 2 */
+
+    /* Infinite loop */
+    /* USER CODE BEGIN WHILE */
     while (1)
     {
-        LL_GPIO_SetOutputPin(IO_RunLed);
-        LL_mDelay(1000);
+
+        /* USER CODE END WHILE */
+
+        /* USER CODE BEGIN 3 */
     }
+    /* USER CODE END 3 */
 }
 
 static void LL_Init(void)
@@ -72,6 +157,22 @@ void SystemClock_Config(void)
     }
     LL_RCC_HSI_SetCalibTrimming(16);
 
+    LL_RCC_LSI_Enable();
+
+    /* Wait till LSI is ready */
+    while (LL_RCC_LSI_IsReady() != 1)
+    {
+    }
+    LL_PWR_EnableBkUpAccess();
+
+    LL_RCC_ForceBackupDomainReset();
+
+    LL_RCC_ReleaseBackupDomainReset();
+
+    LL_RCC_SetRTCClockSource(LL_RCC_RTC_CLKSOURCE_LSI);
+
+    LL_RCC_EnableRTC();
+
     LL_RCC_PLL_ConfigDomain_SYS(LL_RCC_PLLSOURCE_HSI, LL_RCC_PLL_MUL_12, LL_RCC_PREDIV_DIV_2);
 
     LL_RCC_PLL_Enable();
@@ -100,6 +201,84 @@ void SystemClock_Config(void)
 
     /* SysTick_IRQn interrupt configuration */
     NVIC_SetPriority(SysTick_IRQn, 0);
+}
+
+/* CRC init function */
+static void MX_CRC_Init(void)
+{
+
+    /* Peripheral clock enable */
+    LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_CRC);
+
+    LL_CRC_SetInputDataReverseMode(CRC, LL_CRC_INDATA_REVERSE_NONE);
+
+    LL_CRC_SetOutputDataReverseMode(CRC, LL_CRC_OUTDATA_REVERSE_NONE);
+}
+
+/* IWDG init function */
+static void MX_IWDG_Init(void)
+{
+
+    LL_IWDG_Enable(IWDG);
+
+    LL_IWDG_EnableWriteAccess(IWDG);
+
+    LL_IWDG_SetPrescaler(IWDG, LL_IWDG_PRESCALER_4);
+
+    LL_IWDG_SetWindow(IWDG, 4095);
+
+    LL_IWDG_SetReloadCounter(IWDG, 4095);
+
+    while (LL_IWDG_IsReady(IWDG) != 1)
+    {
+    }
+
+    LL_IWDG_ReloadCounter(IWDG);
+}
+
+/* RTC init function */
+static void MX_RTC_Init(void)
+{
+
+    LL_RTC_InitTypeDef RTC_InitStruct;
+    LL_RTC_TimeTypeDef RTC_TimeStruct;
+    LL_RTC_DateTypeDef RTC_DateStruct;
+
+    /* Peripheral clock enable */
+    LL_RCC_EnableRTC();
+
+    /**Initialize RTC and set the Time and Date 
+    */
+    RTC_InitStruct.HourFormat = LL_RTC_HOURFORMAT_24HOUR;
+    RTC_InitStruct.AsynchPrescaler = 127;
+    RTC_InitStruct.SynchPrescaler = 255;
+    LL_RTC_Init(RTC, &RTC_InitStruct);
+
+    LL_RTC_SetAsynchPrescaler(RTC, 127);
+
+    LL_RTC_SetSynchPrescaler(RTC, 255);
+
+    /**Initialize RTC and set the Time and Date 
+    */
+
+    /*不支持BACKUP*/
+    //if (LL_RTC_BAK_GetRegister(RTC, LL_RTC_BKP_DR0) != 0x32F2)
+    if (1)
+    {
+
+        RTC_TimeStruct.Hours = 0;
+        RTC_TimeStruct.Minutes = 0;
+        RTC_TimeStruct.Seconds = 0;
+        LL_RTC_TIME_Init(RTC, LL_RTC_FORMAT_BCD, &RTC_TimeStruct);
+
+        RTC_DateStruct.WeekDay = LL_RTC_WEEKDAY_MONDAY;
+        RTC_DateStruct.Month = LL_RTC_MONTH_JANUARY;
+        RTC_DateStruct.Year = 0;
+        LL_RTC_DATE_Init(RTC, LL_RTC_FORMAT_BCD, &RTC_DateStruct);
+
+        /*不支持BACKUP*/
+        //LL_RTC_BAK_SetRegister(RTC, LL_RTC_BKP_DR0, 0x32F2);
+    }
 }
 
 /* SPI1 init function */
@@ -266,6 +445,22 @@ static void MX_USART1_UART_Init(void)
     LL_USART_Enable(USART1);
 }
 
+/* WWDG init function */
+static void MX_WWDG_Init(void)
+{
+
+    /* Peripheral clock enable */
+    LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_WWDG);
+
+    LL_WWDG_SetCounter(WWDG, 64);
+
+    LL_WWDG_Enable(WWDG);
+
+    LL_WWDG_SetPrescaler(WWDG, LL_WWDG_PRESCALER_1);
+
+    LL_WWDG_SetWindow(WWDG, 64);
+}
+
 /** 
   * Enable DMA controller clock
   */
@@ -297,6 +492,7 @@ static void MX_GPIO_Init(void)
     LL_GPIO_InitTypeDef GPIO_InitStruct;
 
     /* GPIO Ports Clock Enable */
+    LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOF);
     LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOA);
     LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOB);
 

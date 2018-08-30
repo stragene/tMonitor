@@ -4,7 +4,8 @@
         "user_hal.h": "c",
         "stm32f3xx_ll_gpio.h": "c",
         "stm32f0xx.h": "c",
-        "stm32f070x6.h": "c"
+        "stm32f070x6.h": "c",
+        "uart_hal.h": "c"
     },
     "C_Cpp.intelliSenseEngineFallback": "Disabled"
 }

@@ -13,7 +13,7 @@
 ######################################
 # target
 ######################################
-TARGET = TempMonitor
+TARGET = tMonitor
 
 
 ######################################
@@ -49,10 +49,11 @@ BUILD_DIR = build
 C_SOURCES =  \
 Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_ll_utils.c \
 Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_ll_dma.c \
+Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_ll_rtc.c \
 Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_ll_rcc.c \
 Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_ll_spi.c \
 Src/main.c \
-Src/user_hal.c \
+Src/uart_hal.c \
 Src/stm32f0xx_it.c \
 Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_ll_exti.c \
 Src/system_stm32f0xx.c \
@@ -106,7 +107,7 @@ AS_DEFS =
 # C defines
 C_DEFS =  \
 -DUSE_FULL_LL_DRIVER \
--DSTM32F070x6
+-DSTM32F070x6 \
 
 
 # AS includes
