@@ -54,6 +54,8 @@ Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_ll_rcc.c \
 Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_ll_spi.c \
 Src/main.c \
 Src/uart_hal.c \
+Src/led_dog.c \
+Src/ds18b20.c \
 Src/stm32f0xx_it.c \
 Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_ll_exti.c \
 Src/system_stm32f0xx.c \

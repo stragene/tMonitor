@@ -8,8 +8,6 @@ extern "C"
 
 #include "stm32f0xx.h"
 
-/*运行灯*/
-#define IO_RunLed GPIOB, LL_GPIO_PIN_8
 /*FLASH*/
 #define BUS_SPI SPI1
 #define IO_Flash_CS GPIOA, LL_GPIO_PIN_4
