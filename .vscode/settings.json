@@ -9,7 +9,8 @@
         "gd25q32.h": "c",
         "system_stm32f0xx.h": "c",
         "stdint.h": "c",
-        "core_cm0.h": "c"
+        "core_cm0.h": "c",
+        "ds18b20.h": "c"
     },
     "C_Cpp.intelliSenseEngineFallback": "Disabled",
     "C_Cpp.dimInactiveRegions": false
