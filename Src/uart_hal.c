@@ -28,7 +28,7 @@ static void vBuf_Clear(struct ucbuf *buf);
 ****************************************************************/
 int32_t Uart_Read_IT(UartDef *puart, uint8_t *buf, uint32_t count, uint32_t delay)
 {
-    uint32_t readlen = 0;
+    volatile uint32_t readlen = 0;
     uint16_t i;
     if (!count || count > 0xFFFF)
         return -1;
@@ -71,7 +71,7 @@ int32_t Uart_Read_IT(UartDef *puart, uint8_t *buf, uint32_t count, uint32_t dela
 
 int32_t Uart_Write_IT(UartDef *puart, const uint8_t *buf, uint32_t count, uint32_t delay)
 {
-    uint32_t sendlen = 0;
+    volatile uint32_t sendlen = 0;
     uint16_t i;
     //保证count不为0，可至少开启一次发送中断
     if (!count || count > uwBuf_EmpLen(&puart->Sndbuf))
